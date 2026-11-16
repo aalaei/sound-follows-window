@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-import {parseSinkInputs, parseSinks, parseSubscribeLine} from '../lib/pactl.js';
+import {parseSinkInputs, parseSinks, parseSubscribeLine, sinkLabel} from '../lib/pactl.js';
 
 const fixture = name => readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8');
 
@@ -32,4 +32,17 @@ test('parseSubscribeLine reads stream and sink events', () => {
         {action: 'change', kind: 'sink', index: 68});
     assert.equal(parseSubscribeLine("Event 'change' on server #0"), null);
     assert.equal(parseSubscribeLine(''), null);
+});
+
+test('sinkLabel tells apart outputs of the same chipset', () => {
+    const sinks = parseSinks(fixture('sinks.json'));
+    const labels = sinks.map(s => s.description);
+    assert.equal(new Set(labels).size, labels.length, 'labels are unique: ' + labels.join(' | '));
+    assert.ok(labels.some(l => l.startsWith('HDMI / DisplayPort 1 Output')), labels.join(' | '));
+    assert.ok(labels.some(l => l.startsWith('Second Line Output')), labels.join(' | '));
+    assert.ok(labels.some(l => l.endsWith('· GB203 High')), labels.join(' | '));
+});
+
+test('sinkLabel falls back to the sink description', () => {
+    assert.equal(sinkLabel({name: 'x', description: 'Plain'}), 'Plain');
 });
