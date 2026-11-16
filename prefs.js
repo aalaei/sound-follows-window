@@ -7,8 +7,8 @@ import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/ex
 
 import {buildSinkOptions, spokenPort, withMapping} from './lib/monitors.js';
 import {fetchLayout} from './lib/mutter.js';
-import {parseSinks} from './lib/pactl.js';
-import {run} from './lib/system.js';
+import {listOutputs} from './lib/outputs.js';
+import {readState} from './lib/outputIO.js';
 import {speakOn} from './lib/voice.js';
 
 /** Identify request value meaning "every connected monitor". */
@@ -84,14 +84,11 @@ export default class SoundFollowsWindowPrefs extends ExtensionPreferences {
             monitorRows = [];
             speakerRows = [];
 
-            let monitors, sinks;
+            let monitors, outputs;
             try {
-                const [layout, sinkJson] = await Promise.all([
-                    fetchLayout(),
-                    run(['pactl', '-f', 'json', 'list', 'sinks']),
-                ]);
+                const [layout, state] = await Promise.all([fetchLayout(), readState()]);
                 monitors = layout.monitors;
-                sinks = parseSinks(sinkJson);
+                outputs = listOutputs(state.cards);
             } catch (e) {
                 logError(e);
                 const row = new Adw.ActionRow({
@@ -112,9 +109,11 @@ export default class SoundFollowsWindowPrefs extends ExtensionPreferences {
                 monitorRows.push(row);
             }
 
+            // buildSinkOptions works on any {name, description} list: here name is the output key.
+            const choices = outputs.map(o => ({name: o.key, description: o.label}));
             const map = currentMap();
             for (const monitor of monitors) {
-                const {options, selectedIndex} = buildSinkOptions(sinks, map[monitor.id]);
+                const {options, selectedIndex} = buildSinkOptions(choices, map[monitor.id]);
 
                 const model = new Gtk.StringList();
                 for (const option of options)
@@ -146,10 +145,10 @@ export default class SoundFollowsWindowPrefs extends ExtensionPreferences {
                 monitorRows.push(row);
             }
 
-            for (const sink of sinks) {
+            for (const output of outputs) {
                 const row = new Adw.ActionRow({
-                    title: sink.description,
-                    subtitle: sink.name,
+                    title: output.label,
+                    subtitle: output.port,
                 });
                 const play = new Gtk.Button({
                     label: 'Play',
@@ -157,7 +156,7 @@ export default class SoundFollowsWindowPrefs extends ExtensionPreferences {
                     valign: Gtk.Align.CENTER,
                 });
                 play.connect('clicked', () => {
-                    speakOn(sink.name, spokenPort(sink.description)).catch(logError);
+                    speakOn(output.key, spokenPort(output.label)).catch(logError);
                 });
                 row.add_suffix(play);
                 speakerGroup.add(row);
