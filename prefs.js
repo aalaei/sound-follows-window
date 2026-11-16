@@ -108,8 +108,8 @@ export default class SoundFollowsWindowPrefs extends ExtensionPreferences {
         };
 
         refresh.connect('clicked', () => {
-            load();
+            load().catch(e => console.error(`sound-follows-window: ${e.message}`));
         });
-        load();
+        load().catch(e => console.error(`sound-follows-window: ${e.message}`));
     }
 }

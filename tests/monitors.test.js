@@ -34,6 +34,15 @@ test('parseMonitors reads Mutter monitors', () => {
     assert.equal(monitors[1].name, 'eDP-1', 'falls back to the connector name');
 });
 
+test('parseMonitors unwraps GVariant-like display names (RTK case)', () => {
+    const raw = [
+        [['DP-4', 'RTK', '0x2555', 'demoset-1'], [], {'display-name': {deepUnpack: () => 'RTK'}}],
+        [['HDMI-1', 'JMG', 'JMGO', '0x00000001'], [], {'display-name': {deepUnpack: () => 'JMG 52"'}}],
+    ];
+    const names = parseMonitors(raw).map(m => m.name);
+    assert.deepEqual(names, ['RTK', 'JMG 52"']);
+});
+
 test('parseLogicalMonitors gives each layout rectangle its monitor ids', () => {
     const raw = [
         [0, 0, 1, 0, true, [['eDP-1', 'SDC', '0x41ab', '0']], {}],
