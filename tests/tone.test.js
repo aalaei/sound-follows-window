@@ -19,6 +19,10 @@ test('buildToneWav writes a valid mono 16-bit WAV of the requested length', () =
     assert.equal(bytes.length, 44 + Math.round(22050 * 0.4) * 2);
 });
 
+test('the default tone is short (150 ms)', () => {
+    assert.equal(buildToneWav().length, 44 + Math.round(22050 * 0.15) * 2);
+});
+
 test('buildToneWav contains audible samples that fade out at the end', () => {
     const bytes = buildToneWav({});
     const view = new DataView(bytes.buffer);
