@@ -1,0 +1,8 @@
+{
+  "uuid": "sound-follows-window@ali.local",
+  "name": "Sound Follows Window",
+  "description": "Moves each app's sound to the speakers of the monitor its window is on.",
+  "settings-schema": "org.gnome.shell.extensions.sound-follows-window",
+  "shell-version": ["51"],
+  "url": ""
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.sound-follows-window" path="/org/gnome/shell/extensions/sound-follows-window/">
+    <key name="monitor-sinks" type="a{ss}">
+      <default>{}</default>
+      <summary>Monitor to speaker mapping</summary>
+      <description>Maps a stable monitor id (connector|vendor|product|serial) to a PipeWire sink node name. Monitors missing from this map are left alone.</description>
+    </key>
+  </schema>
+</schemalist>

@@ -1,0 +1,10 @@
+{
+  "name": "sound-follows-window",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "test": "node --test tests/monitors.test.js"
+  }
+}
