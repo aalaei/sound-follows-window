@@ -8,7 +8,7 @@ import {
     monitorId,
     parseLogicalMonitors,
     parseMonitors,
-    spokenPort,
+    spokenName,
     withMapping,
 } from '../lib/monitors.js';
 import {parseSinks} from '../lib/pactl.js';
@@ -101,7 +101,9 @@ test('withMapping sets, replaces and clears entries without mutating input', () 
     assert.deepEqual(cleared, {'eDP-1|SDC|0x41ab|0': 'b'});
 });
 
-test('spokenPort drops the card name from a sink label', () => {
-    assert.equal(spokenPort('HDMI / DisplayPort 1 Output · 800 Series'), 'HDMI / DisplayPort 1 Output');
-    assert.equal(spokenPort('Second Line Output'), 'Second Line Output');
+test('spokenName gives short distinct names for each output', () => {
+    assert.equal(spokenName('HDMI / DisplayPort 2 Output · GB203 High'), 'HDMI 2');
+    assert.equal(spokenName('HDMI / DisplayPort · GB203 High'), 'HDMI');
+    assert.equal(spokenName('HDMI / DisplayPort 3 Output · 800 Series'), 'HDMI 3');
+    assert.equal(spokenName('Second Line Output · 800 Series'), 'Line out 2');
 });
