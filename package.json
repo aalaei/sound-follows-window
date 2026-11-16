@@ -5,6 +5,6 @@
   "type": "module",
   "license": "GPL-2.0-or-later",
   "scripts": {
-    "test": "node --test tests/monitors.test.js"
+    "test": "node --test tests/*.test.js"
   }
 }

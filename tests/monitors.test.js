@@ -6,14 +6,15 @@ import {
     UNASSIGNED,
     buildSinkOptions,
     monitorId,
+    parseLogicalMonitors,
     parseMonitors,
-    parseSinks,
     withMapping,
 } from '../lib/monitors.js';
+import {parseSinks} from '../lib/pactl.js';
 
 const SINKS_JSON = JSON.stringify([
-    {name: 'alsa_output.hdmi3', description: 'HDMI 3'},
-    {name: 'alsa_output.line2', description: 'Line Out 2'},
+    {index: 1, name: 'alsa_output.hdmi3', description: 'HDMI 3'},
+    {index: 2, name: 'alsa_output.line2', description: 'Line Out 2'},
 ]);
 
 test('monitorId joins connector and EDID identity', () => {
@@ -22,7 +23,7 @@ test('monitorId joins connector and EDID identity', () => {
         'DP-4|RTK|0x2555|demoset-1');
 });
 
-test('parseMonitors reads Mutter GetCurrentState monitors', () => {
+test('parseMonitors reads Mutter monitors', () => {
     const raw = [
         [['DP-4', 'RTK', '0x2555', 'demoset-1'], [], {'display-name': 'RTK'}],
         [['eDP-1', 'SDC', '0x41ab', '0x00000000'], [], {}],
@@ -33,12 +34,33 @@ test('parseMonitors reads Mutter GetCurrentState monitors', () => {
     assert.equal(monitors[1].name, 'eDP-1', 'falls back to the connector name');
 });
 
-test('parseSinks reads pactl JSON and falls back to the name', () => {
-    const sinks = parseSinks(JSON.stringify([{name: 'a'}, {name: 'b', description: 'B'}]));
-    assert.deepEqual(sinks, [
-        {name: 'a', description: 'a'},
-        {name: 'b', description: 'B'},
+test('parseLogicalMonitors gives each layout rectangle its monitor ids', () => {
+    const raw = [
+        [0, 0, 1, 0, true, [['eDP-1', 'SDC', '0x41ab', '0']], {}],
+        [1920, 0, 1, 0, false, [['DP-4', 'RTK', '0x2555', 'demoset-1']], {}],
+    ];
+    assert.deepEqual(parseLogicalMonitors(raw), [
+        {x: 0, y: 0, ids: ['eDP-1|SDC|0x41ab|0']},
+        {x: 1920, y: 0, ids: ['DP-4|RTK|0x2555|demoset-1']},
     ]);
+});
+
+test('parseSinks reads real pactl JSON and falls back to the name', () => {
+    const sinks = parseSinks(JSON.stringify([{index: 7, name: 'a'}, {index: 8, name: 'b', description: 'B'}]));
+    assert.deepEqual(sinks, [
+        {index: 7, name: 'a', description: 'a'},
+        {index: 8, name: 'b', description: 'B'},
+    ]);
+});
+
+test('parseSinks accepts the recorded pactl output', async () => {
+    const {readFileSync} = await import('node:fs');
+    const sinks = parseSinks(readFileSync(new URL('./fixtures/sinks.json', import.meta.url), 'utf8'));
+    assert.ok(sinks.length > 0);
+    for (const s of sinks) {
+        assert.equal(typeof s.index, 'number');
+        assert.ok(s.name.length > 0);
+    }
 });
 
 test('buildSinkOptions selects Unassigned when nothing is saved', () => {

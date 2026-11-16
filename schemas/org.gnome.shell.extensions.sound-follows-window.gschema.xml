@@ -6,5 +6,10 @@
       <summary>Monitor to speaker mapping</summary>
       <description>Maps a stable monitor id (connector|vendor|product|serial) to a PipeWire sink node name. Monitors missing from this map are left alone.</description>
     </key>
+    <key name="debug-logging" type="b">
+      <default>false</default>
+      <summary>Verbose logging</summary>
+      <description>Log routing decisions with console.debug. Read with: journalctl -f -o cat /usr/bin/gnome-shell</description>
+    </key>
   </schema>
 </schemalist>
