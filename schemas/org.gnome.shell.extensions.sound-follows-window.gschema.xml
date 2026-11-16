@@ -6,6 +6,11 @@
       <summary>Monitor to speaker mapping</summary>
       <description>Maps a stable monitor id (connector|vendor|product|serial) to a PipeWire sink node name. Monitors missing from this map are left alone.</description>
     </key>
+    <key name="identify-request" type="(st)">
+      <default>('', 0)</default>
+      <summary>Identify request</summary>
+      <description>Monitor id to label on screen ('*' for all), plus a counter so repeated requests fire.</description>
+    </key>
     <key name="debug-logging" type="b">
       <default>false</default>
       <summary>Verbose logging</summary>

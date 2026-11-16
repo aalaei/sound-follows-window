@@ -8,6 +8,7 @@ import {
     monitorId,
     parseLogicalMonitors,
     parseMonitors,
+    spokenPort,
     withMapping,
 } from '../lib/monitors.js';
 import {parseSinks} from '../lib/pactl.js';
@@ -98,4 +99,9 @@ test('withMapping sets, replaces and clears entries without mutating input', () 
 
     const cleared = withMapping(set, 'DP-4|RTK|0x2555|demoset-1', UNASSIGNED);
     assert.deepEqual(cleared, {'eDP-1|SDC|0x41ab|0': 'b'});
+});
+
+test('spokenPort drops the card name from a sink label', () => {
+    assert.equal(spokenPort('HDMI / DisplayPort 1 Output · 800 Series'), 'HDMI / DisplayPort 1 Output');
+    assert.equal(spokenPort('Second Line Output'), 'Second Line Output');
 });
