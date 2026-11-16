@@ -19,7 +19,7 @@ export default class SoundFollowsWindowExtension extends Extension {
         this._settings = this.getSettings();
         this._log = msg => {
             if (this._settings.get_boolean('debug-logging'))
-                console.debug(`sound-follows-window: ${msg}`);
+                console.log(`sound-follows-window: ${msg}`);
         };
 
         this._audio = new AudioBackend(this._log);
