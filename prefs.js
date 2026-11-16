@@ -2,7 +2,7 @@
 import Adw from 'gi://Adw?version=1';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import Gtk from 'gi://Gtk?version=4';
+import Gtk from 'gi://Gtk?version=4.0';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 import {buildSinkOptions, withMapping} from './lib/monitors.js';
