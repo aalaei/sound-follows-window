@@ -5,11 +5,11 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk?version=4.0';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-import {buildSinkOptions, spokenPort, withMapping} from './lib/monitors.js';
+import {buildSinkOptions, withMapping} from './lib/monitors.js';
 import {fetchLayout} from './lib/mutter.js';
 import {listOutputs} from './lib/outputs.js';
 import {readState} from './lib/outputIO.js';
-import {speakOn} from './lib/voice.js';
+import {playOn} from './lib/voice.js';
 
 /** Identify request value meaning "every connected monitor". */
 const IDENTIFY_ALL = '*';
@@ -49,7 +49,7 @@ export default class SoundFollowsWindowPrefs extends ExtensionPreferences {
         // Speakers -----------------------------------------------------
         const speakerGroup = new Adw.PreferencesGroup({
             title: 'Speakers',
-            description: 'Press Play to hear a speaker say its name, so you know which one it is.',
+            description: 'Press Play to hear a tone from that speaker.',
         });
         page.add(speakerGroup);
 
@@ -152,11 +152,11 @@ export default class SoundFollowsWindowPrefs extends ExtensionPreferences {
                 });
                 const play = new Gtk.Button({
                     label: 'Play',
-                    tooltip_text: 'Say the name of this speaker',
+                    tooltip_text: 'Play a tone on this speaker',
                     valign: Gtk.Align.CENTER,
                 });
                 play.connect('clicked', () => {
-                    speakOn(output.key, spokenPort(output.label)).catch(logError);
+                    playOn(output.key).catch(logError);
                 });
                 row.add_suffix(play);
                 speakerGroup.add(row);
