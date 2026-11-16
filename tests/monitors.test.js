@@ -58,8 +58,8 @@ test('parseLogicalMonitors gives each layout rectangle its monitor ids', () => {
 test('parseSinks reads real pactl JSON and falls back to the name', () => {
     const sinks = parseSinks(JSON.stringify([{index: 7, name: 'a'}, {index: 8, name: 'b', description: 'B'}]));
     assert.deepEqual(sinks, [
-        {index: 7, name: 'a', description: 'a', activePort: null},
-        {index: 8, name: 'b', description: 'B', activePort: null},
+        {index: 7, name: 'a', description: 'a', activePort: null, state: null},
+        {index: 8, name: 'b', description: 'B', activePort: null, state: null},
     ]);
 });
 
